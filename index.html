@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR Research Dashboard</title>
+  <style>
+    :root {
+      --bg: #f0f4f8;
+      --panel: rgba(255, 255, 255, 0.92);
+      --panel-border: rgba(0, 0, 0, 0.08);
+      --text-primary: #1a2540;
+      --text-secondary: #4a5568;
+      --teal: #007a6e;
+      --teal-light: #00b5a0;
+      --teal-bg: rgba(0, 180, 160, 0.08);
+      --teal-border: rgba(0, 180, 160, 0.25);
+      --amber: #b45309;
+      --amber-bg: rgba(180, 83, 9, 0.08);
+      --amber-border: rgba(180, 83, 9, 0.25);
+      --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: Arial, sans-serif;
+      color: var(--text-primary);
+    }
+
+    body {
+      position: relative;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 2000;
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 14px;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-btn {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background: var(--teal-bg);
+      border-color: var(--teal-border);
+      color: var(--teal);
+    }
+
+    .nav-btn.active {
+      background: var(--teal-bg);
+      border-color: var(--teal-border);
+      color: var(--teal);
+    }
+
+    .nav-btn.predictor.active {
+      background: var(--amber-bg);
+      border-color: var(--amber-border);
+      color: var(--amber);
+    }
+
+    .content-section {
+      width: 100vw;
+      height: 100vh;
+      display: none;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <button class="nav-btn active" onclick="switchTab('map-view', this)">🌍 ARG Discovery Map</button>
+    <button class="nav-btn predictor" onclick="switchTab('ml-view', this)">🤖 ML Resistance Predictor</button>
+  </div>
+
+  <div id="map-view" class="content-section active">
+    <iframe src="./ARG_Discovery_Atlas.html" title="ARG Discovery Map"></iframe>
+  </div>
+
+  <div id="ml-view" class="content-section">
+    <iframe
+      src="https://1vaaa-saurs-ast-predictor.hf.space"
+      title="ML Resistance Predictor">
+    </iframe>
+  </div>
+
+  <script>
+    function switchTab(tabId, btnElement) {
+      document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btnElement.classList.add('active');
+    }
+  </script>
+</body>
+</html>
