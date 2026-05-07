@@ -3,184 +3,138 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARG Discovery Atlas</title>
+  <title>AMR Research Dashboard</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    /* 全局重置，确保占满全屏且无滚动条 */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     html, body {
-      margin: 0;
-      padding: 0;
+      width: 100%;
       height: 100%;
-      font-family: Arial, sans-serif;
+      overflow: hidden; /* 防止双滚动条 */
+      font-family: 'Inter', -apple-system, sans-serif;
       background: #f4f7fb;
-      color: #1f2937;
     }
 
-    body {
-      min-height: 100vh;
-    }
-
-    .page {
+    /* 使用 Flex 布局将页面分为上下两部分 */
+    .dashboard-container {
       display: flex;
       flex-direction: column;
       height: 100vh;
-      width: 100%;
-      overflow: hidden;
+      width: 100vw;
     }
 
+    /* 顶部导航栏：固定高度，不被压缩 */
     .navbar {
-      flex: 0 0 72px;
-      height: 72px;
+      flex: 0 0 72px; 
+      background: #0f766e; /* 保持你的绿色调 */
+      color: white;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 24px;
-      background: #0f766e;
-      color: white;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-      z-index: 10;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 100;
     }
 
     .nav-left {
       display: flex;
       align-items: center;
-      gap: 14px;
-      min-width: 0;
+      gap: 12px;
     }
 
-    .logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.14);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .nav-left h1 {
       font-size: 20px;
-      flex-shrink: 0;
-    }
-
-    .title-wrap {
-      min-width: 0;
-    }
-
-    .title-wrap h1 {
-      margin: 0;
-      font-size: 20px;
-      line-height: 1.1;
-      font-weight: 700;
-    }
-
-    .title-wrap p {
-      margin: 4px 0 0;
-      font-size: 12px;
-      opacity: 0.9;
+      font-weight: 600;
     }
 
     .nav-right {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
+      gap: 12px;
     }
 
+    /* 切换按钮样式 */
     .nav-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      background: rgba(255, 255, 255, 0.12);
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.1);
       color: white;
-      text-decoration: none;
-      font-size: 14px;
-      transition: background 0.2s ease, transform 0.2s ease;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
     }
 
     .nav-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-1px);
+      background: rgba(255,255,255,0.2);
     }
 
-    .content {
+    .nav-btn.active {
+      background: white;
+      color: #0f766e;
+      border-color: white;
+    }
+
+    /* 内容区域：自动填满下方剩余所有空间 */
+    .content-area {
       flex: 1;
-      min-height: 0;
-      width: 100%;
-      overflow: hidden;
-      background: #e5eef4;
-    }
-
-    .iframe-wrap {
-      width: 100%;
-      height: 100%;
-      padding: 0;
+      position: relative; /* 为内部绝对定位的 iframe 提供参考 */
     }
 
     iframe {
-      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       border: none;
-      background: white;
+      display: none; /* 默认隐藏 */
     }
 
-    @media (max-width: 768px) {
-      .navbar {
-        height: auto;
-        flex: 0 0 auto;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-        padding: 14px 16px;
-      }
-
-      .nav-right {
-        width: 100%;
-        flex-wrap: wrap;
-      }
-
-      .nav-btn {
-        font-size: 13px;
-        padding: 9px 12px;
-      }
-
-      .title-wrap h1 {
-        font-size: 18px;
-      }
+    iframe.active {
+      display: block; /* 激活时显示 */
     }
   </style>
 </head>
 <body>
-  <div class="page">
+
+  <div class="dashboard-container">
     <header class="navbar">
       <div class="nav-left">
-        <div class="logo">🧬</div>
-        <div class="title-wrap">
-          <h1>ARG Discovery Atlas</h1>
-          <p>Global ARG map and prediction portal</p>
-        </div>
-      </div>
+        <span style="font-size: 24px;">🧬</span>
+        <h1>AMR Detection Map</h1> </div>
 
       <div class="nav-right">
-        <a class="nav-btn" href="ARG_Discovery_Atlas.html" target="_blank" rel="noopener noreferrer">Open Full Atlas</a>
-        <a class="nav-btn" href="https://YOUR-GRADIO-APP.hf.space" target="_blank" rel="noopener noreferrer">Open Predictor</a>
+        <button class="nav-btn active" onclick="showTab('map', this)">🌍 Detection Map</button>
+        <button class="nav-btn" onclick="showTab('predictor', this)">🤖 AST Predictor</button>
       </div>
     </header>
 
-    <main class="content">
-      <div class="iframe-wrap">
-        <iframe
-          src="https://YOUR-GRADIO-APP.hf.space"
-          title="ARG Predictor"
-          loading="lazy"
-          allow="clipboard-read; clipboard-write">
-        </iframe>
-      </div>
+    <main class="content-area">
+      <iframe id="iframe-map" class="active" src="./ARG_Detection_Map.html"></iframe>
+      
+      <iframe id="iframe-predictor" src="https://1vaaa-saurs-ast-predictor.hf.space"></iframe>
     </main>
   </div>
+
+  <script>
+    function showTab(type, btn) {
+      // 1. 切换按钮的高亮状态
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // 2. 切换 iframe 的显示状态
+      const mapIframe = document.getElementById('iframe-map');
+      const predictorIframe = document.getElementById('iframe-predictor');
+
+      if (type === 'map') {
+        mapIframe.classList.add('active');
+        predictorIframe.classList.remove('active');
+      } else {
+        mapIframe.classList.remove('active');
+        predictorIframe.classList.add('active');
+      }
+    }
+  </script>
 </body>
 </html>
