@@ -3,82 +3,89 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AMR Research Dashboard</title>
+  <title>ARG Detection Map Portal</title>
   <style>
-    /* 全局重置，确保占满全屏且无滚动条 */
+    /* 1. 布局重置：使用 Flexbox 确保导航栏与内容不重叠 */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden; /* 防止双滚动条 */
+      overflow: hidden; 
       font-family: 'Inter', -apple-system, sans-serif;
       background: #f4f7fb;
     }
 
-    /* 使用 Flex 布局将页面分为上下两部分 */
-    .dashboard-container {
+    .page-wrapper {
       display: flex;
       flex-direction: column;
       height: 100vh;
       width: 100vw;
     }
 
-    /* 顶部导航栏：固定高度，不被压缩 */
+    /* 2. 导航栏样式：固定高度，不遮挡下方 */
     .navbar {
-      flex: 0 0 72px; 
-      background: #0f766e; /* 保持你的绿色调 */
+      flex: 0 0 80px; /* 导航栏占据固定 80px 高度 */
+      background: #0f766e; /* 绿色调 */
       color: white;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 24px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      z-index: 100;
+      z-index: 1000;
     }
 
     .nav-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 15px;
     }
 
-    .nav-left h1 {
+    .logo-icon { font-size: 28px; }
+
+    .title-group h1 {
       font-size: 20px;
-      font-weight: 600;
+      font-weight: 700;
+      line-height: 1.2;
     }
 
+    .title-group p {
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    /* 3. 切换按钮：取消 <a> 链接，改用纯按钮切换 */
     .nav-right {
       display: flex;
       gap: 12px;
     }
 
-    /* 切换按钮样式 */
     .nav-btn {
-      padding: 10px 18px;
+      padding: 10px 20px;
       border-radius: 8px;
       border: 1px solid rgba(255,255,255,0.2);
       background: rgba(255,255,255,0.1);
       color: white;
       cursor: pointer;
       font-weight: 500;
-      transition: all 0.2s;
+      font-size: 14px;
+      transition: all 0.2s ease;
     }
 
-    .nav-btn:hover {
-      background: rgba(255,255,255,0.2);
-    }
+    .nav-btn:hover { background: rgba(255,255,255,0.2); }
 
     .nav-btn.active {
-      background: white;
+      background: #ffffff;
       color: #0f766e;
-      border-color: white;
+      border-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    /* 内容区域：自动填满下方剩余所有空间 */
-    .content-area {
-      flex: 1;
-      position: relative; /* 为内部绝对定位的 iframe 提供参考 */
+    /* 4. 内容区域：iframe 容器占据剩余高度 */
+    .content-frame-container {
+      flex: 1; /* 自动撑满剩下的屏幕空间 */
+      position: relative;
     }
 
     iframe {
@@ -88,51 +95,55 @@
       width: 100%;
       height: 100%;
       border: none;
-      display: none; /* 默认隐藏 */
+      display: none; /* 默认隐藏所有 iframe */
     }
 
     iframe.active {
-      display: block; /* 激活时显示 */
+      display: block; /* 只有选中的 active 标签显示 */
     }
   </style>
 </head>
 <body>
 
-  <div class="dashboard-container">
+  <div class="page-wrapper">
     <header class="navbar">
       <div class="nav-left">
-        <span style="font-size: 24px;">🧬</span>
-        <h1>AMR Detection Map</h1> </div>
+        <div class="logo-icon">🧬</div>
+        <div class="title-group">
+          <h1>ARG Detection Map</h1>
+          <p>Global ARG map and prediction portal</p>
+        </div>
+      </div>
 
       <div class="nav-right">
-        <button class="nav-btn active" onclick="showTab('map', this)">🌍 Detection Map</button>
-        <button class="nav-btn" onclick="showTab('predictor', this)">🤖 AST Predictor</button>
+        <button class="nav-btn active" onclick="switchTab('map', this)">🌍 Detection Map</button>
+        <button class="nav-btn" onclick="switchTab('predictor', this)">🤖 AST Predictor</button>
       </div>
     </header>
 
-    <main class="content-area">
-      <iframe id="iframe-map" class="active" src="./ARG_Detection_Map.html"></iframe>
+    <main class="content-frame-container">
+      <iframe id="tab-map" class="active" src="./ARG_Detection_Map.html"></iframe>
       
-      <iframe id="iframe-predictor" src="https://1vaaa-saurs-ast-predictor.hf.space"></iframe>
+      <iframe id="tab-predictor" src="https://1vaaa-saurs-ast-predictor.hf.space"></iframe>
     </main>
   </div>
 
   <script>
-    function showTab(type, btn) {
-      // 1. 切换按钮的高亮状态
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    function switchTab(tabName, btn) {
+      // 1. 更新按钮样式
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
       btn.classList.add('active');
 
-      // 2. 切换 iframe 的显示状态
-      const mapIframe = document.getElementById('iframe-map');
-      const predictorIframe = document.getElementById('iframe-predictor');
+      // 2. 切换内容显示
+      const mapFrame = document.getElementById('tab-map');
+      const predictorFrame = document.getElementById('tab-predictor');
 
-      if (type === 'map') {
-        mapIframe.classList.add('active');
-        predictorIframe.classList.remove('active');
+      if (tabName === 'map') {
+        mapFrame.classList.add('active');
+        predictorFrame.classList.remove('active');
       } else {
-        mapIframe.classList.remove('active');
-        predictorIframe.classList.add('active');
+        mapFrame.classList.remove('active');
+        predictorFrame.classList.add('active');
       }
     }
   </script>
